@@ -17,3 +17,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Jedi
+      fonts:
+        - asset: fonts/Starjedi.ttf
