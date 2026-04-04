@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888848706930",
+    "project_id": "wire-services",
+    "storage_bucket": "wire-services.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888848706930:android:bb8e7eae52c92c91cfc1eb",
+        "android_client_info": {
+          "package_name": "com.example.practica_bd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAjcyXNdfEcpij5UA7hFC6F5vpgWCpbZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
