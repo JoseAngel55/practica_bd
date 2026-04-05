@@ -15,8 +15,6 @@ dependencies:
   firebase_core: ^4.5.0
   firebase_auth: ^6.1.4
   cloud_firestore: ^6.1.0
-  flutter_local_notifications: ^18.0.1
-  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +23,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
 
   fonts:
     - family: Jedi
