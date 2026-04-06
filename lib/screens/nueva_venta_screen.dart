@@ -38,7 +38,19 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
   @override
   void initState() {
     super.initState();
-    ValueListener.limpiarCarrito();
+    // Diferir al siguiente frame para evitar modificar ValueNotifier durante build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ValueListener.limpiarCarrito();
+    });
+  }
+
+  @override
+  void dispose() {
+    _conCliente.dispose();
+    _conTelefono.dispose();
+    _conNotas.dispose();
+    _conFecha.dispose();
+    super.dispose();
   }
 
   Future<void> _seleccionarFecha() async {
@@ -71,28 +83,29 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
     }
     setState(() => _guardando = true);
 
+    // ✅ CORREGIDO: las claves ahora coinciden exactamente con VentaDAO.fromMap
     final data = {
-      'clienteNombre':   _conCliente.text.trim(),
-      'clienteTelefono': _conTelefono.text.trim(),
-      'tipo':    _tipo,
-      'estatus': 'pendiente',
-      'fechaEntrega': _conFecha.text,
-      'notas':   _conNotas.text.trim(),
-      'total':   ValueListener.totalCarrito,
-      'idUsuario': _auth.currentUserId ?? '',
-      'fechaCreacion': DateTime.now().toIso8601String(),
+      'nombreCliente':   _conCliente.text.trim(),
+      'telefonoCliente': _conTelefono.text.trim(),
+      'tipo':            _tipo,
+      'status':          'pendiente',   // era 'estatus' — campo incorrecto
+      'fechaEntrega':    _conFecha.text,
+      'notas':           _conNotas.text.trim(),
+      'total':           ValueListener.totalCarrito,
+      'idUsuario':       _auth.currentUserId ?? '',
+      'fechaCreacion':   DateTime.now().toIso8601String(),
     };
 
     final idVenta = await _ventasFS.insertVenta(data);
     if (idVenta != null) {
       for (final item in ValueListener.carrito.value) {
         await _detFS.insertDetalle({
-          'idVenta': idVenta,
-          'idProducto': item.idProducto,
-          'nombreProducto': item.nombreProducto,
-          'precioUnitario': item.precioUnitario,
-          'cantidad': item.cantidad,
-          'subtotal': item.subtotal,
+          'idVenta':         idVenta,
+          'idProducto':      item.idProducto,
+          'nombreProducto':  item.nombreProducto,
+          'precioUnitario':  item.precioUnitario,
+          'cantidad':        item.cantidad,
+          'subtotal':        item.subtotal,
         });
       }
       final fechaE = DateTime.tryParse(_conFecha.text);
@@ -112,7 +125,7 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
     } else {
       _snack('// ERROR al guardar', AppTheme.neonRed);
     }
-    setState(() => _guardando = false);
+    if (mounted) setState(() => _guardando = false);
   }
 
   void _snack(String msg, Color color) {
@@ -259,6 +272,18 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
                   final prods = snap.data!.docs.map((d) =>
                       ProductoDAO.fromMap(
                           d.data() as Map<String, dynamic>, d.id)).toList();
+                  if (prods.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Text(
+                        '// Sin productos en esta categoría',
+                        style: const TextStyle(
+                            fontFamily: 'ShareTechMono',
+                            fontSize: 11,
+                            color: AppTheme.textMuted),
+                      ),
+                    );
+                  }
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Wrap(
@@ -408,6 +433,8 @@ class _NuevaVentaScreenState extends State<NuevaVentaScreen> {
   }
 }
 
+// ─── Widgets reutilizables ────────────────────────────────────────────────────
+
 class QuantitySelector extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
@@ -485,8 +512,7 @@ class _TermBtn extends StatelessWidget {
             style: TextStyle(
                 fontFamily: 'ShareTechMono',
                 fontSize: 18,
-                color:
-                    active ? AppTheme.neonGreen : AppTheme.textMuted)),
+                color: active ? AppTheme.neonGreen : AppTheme.textMuted)),
       ),
     );
   }
@@ -582,7 +608,6 @@ class _ProductoChip extends StatelessWidget {
       ),
     );
   }
-   
 
   void _dialog(BuildContext context) {
     int cantidad = 1;

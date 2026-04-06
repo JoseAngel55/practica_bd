@@ -16,7 +16,7 @@ class CarritoScreen extends StatelessWidget {
           GestureDetector(
             onTap: () {
               ValueListener.limpiarCarrito();
-              Navigator.pop(context);
+              if (context.mounted) Navigator.pop(context);
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -69,9 +69,11 @@ class CarritoScreen extends StatelessWidget {
             );
           }
 
+          final total = carrito.fold(0.0, (s, i) => s + i.subtotal);
+          final totalItems = carrito.fold(0, (s, i) => s + i.cantidad);
+
           return CustomScrollView(
             slivers: [
-              // ── Header de conteo ──────────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 14, 12, 6),
@@ -94,7 +96,7 @@ class CarritoScreen extends StatelessWidget {
                             Border.all(color: AppTheme.neonGreen, width: 1),
                       ),
                       child: Text(
-                        '${ValueListener.totalItemsCarrito}',
+                        '$totalItems',
                         style: const TextStyle(
                             fontFamily: 'ShareTechMono',
                             fontSize: 11,
@@ -105,7 +107,6 @@ class CarritoScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Lista de ítems ────────────────────────────────
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                 sliver: SliverList(
@@ -128,7 +129,6 @@ class CarritoScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 12),
                           child: Row(children: [
-                            // Cantidad badge
                             Container(
                               width: 32,
                               height: 32,
@@ -149,7 +149,6 @@ class CarritoScreen extends StatelessWidget {
 
                             const SizedBox(width: 12),
 
-                            // Nombre + detalle
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +174,6 @@ class CarritoScreen extends StatelessWidget {
                               ),
                             ),
 
-                            // Subtotal
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -216,7 +214,6 @@ class CarritoScreen extends StatelessWidget {
                 ),
               ),
 
-              // ── Total ─────────────────────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
@@ -235,7 +232,7 @@ class CarritoScreen extends StatelessWidget {
                               letterSpacing: 2),
                         ),
                         Text(
-                          '\$${ValueListener.totalCarrito.toStringAsFixed(2)}',
+                          '\$${total.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontFamily: 'ShareTechMono',
                             fontSize: 28,
@@ -250,12 +247,11 @@ class CarritoScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Container(height: 1, color: AppTheme.neonGreen,),
+                    Container(height: 1, color: AppTheme.neonGreen),
                   ]),
                 ),
               ),
 
-              // ── Nota informativa ─────────────────────────────
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),

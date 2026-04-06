@@ -175,7 +175,6 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
               border: Border.all(color: AppTheme.borderIdle),
             ),
             child: TableCalendar<VentaDAO>(
-              locale: 'es_MX',
               firstDay: DateTime(2020),
               lastDay: DateTime(2030),
               focusedDay: _focusedDay,
@@ -202,7 +201,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                     color: AppTheme.textMuted, fontFamily: 'ShareTechMono'),
                 outsideTextStyle: const TextStyle(
                     color: AppTheme.textMuted, fontFamily: 'ShareTechMono'),
-                markersMaxCount: 0,
+                markersMaxCount: 0, // usamos markerBuilder manual
                 rowDecoration: const BoxDecoration(color: Colors.transparent),
               ),
               headerStyle: const HeaderStyle(
@@ -230,18 +229,23 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                 markerBuilder: (_, day, events) {
                   if (events.isEmpty) return const SizedBox.shrink();
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 3),
+                    padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: events.take(4).map((v) {
+                        // ✅ El color ya viene correcto de AppTheme.colorEstatus:
+                        //   pendiente  → neonGreen (verde)
+                        //   cancelado  → neonRed   (rojo)
+                        //   completado → neonBlue  (azul/blanco visual)
                         final col = AppTheme.colorEstatus(v.status);
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                          width: 5, height: 5,
+                          width: 6, height: 6,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: col,
-                            boxShadow: [BoxShadow(color: col.withOpacity(0.7),
-                                blurRadius: 3)],
+                            shape: BoxShape.circle,
+                            color: col,
+                            boxShadow: [BoxShadow(
+                                color: col.withOpacity(0.8), blurRadius: 4)],
                           ),
                         );
                       }).toList(),

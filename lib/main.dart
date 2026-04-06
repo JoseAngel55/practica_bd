@@ -9,8 +9,7 @@ import 'package:practica_bd/utils/theme_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -28,11 +27,11 @@ class MyApp extends StatelessWidget {
         Locale('en', 'US'),
       ],
       home: LoginScreen(),
-      routes:{
-        "/login" : (context) => LoginScreen() ,
-        "/register" : (context) => RegisterScreen() ,
-        "/dash" : (context) => DashboardScreen() ,
-        '/nueva_venta': (_) => const NuevaVentaScreen(),
+      routes: {
+        '/login':       (context) => LoginScreen(),
+        '/register':    (context) => RegisterScreen(),
+        '/dash':        (context) => DashboardScreen(),
+        '/nueva_venta': (_)       => const NuevaVentaScreen(),
       },
     );
   }
